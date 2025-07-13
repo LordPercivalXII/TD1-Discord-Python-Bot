@@ -47,5 +47,26 @@
     "url": "https://github.com/TwelfthDoctor1/TD1-TS4-Scriptology",
     "redacted": false,
     "disallow_entry": false
+  },
+  "lta_datamall": {
+    "name": "LTA Datamall API Bus Service Testing",
+    "description": "The code in this repository makes use of Land Transport Authority's (LTA) DataMall Dynamic API to call the bus arrival times for a specified bus stop.",
+    "url": "https://github.com/TwelfthDoctor1/BusSvcTesting",
+    "redacted": false,
+    "disallow_entry": false
+  },
+  "bussvctelebot": {
+    "name": "Bus Service Telegram Bot",
+    "description": "The code in this repository makes use of Land Transport Authority's (LTA) DataMall Dynamic API to call the bus arrival times for a specified bus stop and output it into a Telegram Bot.",
+    "url": "https://github.com/TwelfthDoctor1/BusSvcTelegramBot",
+    "redacted": false,
+    "disallow_entry": false
+  },
+  "timedisplay": {
+    "name": "TimeDisplay GUI",
+    "description": "A clock application.",
+    "url": "https://github.com/TwelfthDoctor1/TimeDisplayGUI",
+    "redacted": false,
+    "disallow_entry": false
   }
 }
