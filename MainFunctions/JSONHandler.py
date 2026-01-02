@@ -11,7 +11,7 @@ class JSONHandlerService(BaseLoggerService):
 
 
 JSON_LIB = os.path.join(Path(__file__).resolve().parent.parent, "JSONLib")
-BASE_URL = "https://raw.githubusercontent.com/TwelfthDoctor1/TD1-Discord-Python-Bot/main/JSONLib/"
+BASE_URL = "https://raw.githubusercontent.com/LordPercivalXII/TD1-Discord-Python-Bot/main/JSONLib/"
 
 JSONHANDLER_SERVICE = JSONHandlerService()
 
@@ -89,3 +89,44 @@ class JSONHandler:
 
     def return_specific_json(self, key):
         return self.json_data[key]
+
+    def update_json(self, data_dict: dict):
+        """
+        Update the entire JSON Dictionary entry.
+        :param data_dict: Dictionary Data
+        :return:
+        """
+        self.json_data = data_dict
+
+    def update_specific_json(self, key: str, value):
+        """
+        Update a specific JSON Data value.
+        :param key: Dictionary Key
+        :param value: Dictionary Value
+        :return:
+        """
+        self.json_data[key] = value
+
+    def add_json_entry(self, key: str = None, value=None, dict_data: dict = None):
+        """
+        Add a new JSON Entry.
+
+        Either add using Key Value or by Dictionary.
+        :param key: Dictionary Key
+        :param value: Dictionary Value
+        :param dict_data: Dictionary Data
+        :return:
+        """
+        if key is not None and value is not None:
+            self.json_data[key] = value
+        else:
+            self.json_data.update(dict_data)
+
+    def delete_json_entry(self, key: str):
+        """
+        Delete a JSON Entry.
+        :param key: Dictionary Key
+        :return:
+        """
+        del self.json_data[key]
+

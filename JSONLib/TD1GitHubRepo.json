@@ -2,70 +2,70 @@
   "ole_handler": {
     "name": "OLEHandler",
     "description": "A Program that is capable of extracting embeds and converting oleObjects into PDFs.",
-    "url": "https://github.com/TwelfthDoctor1/OLEHandler",
+    "url": "https://github.com/LordPercivalXII/OLEHandler",
     "redacted": false,
     "disallow_entry": false
   },
   "esp32": {
     "name": "ESP32 Test",
     "description": "This is an E300 FYP project. Not for release.",
-    "url": "https://github.com/TwelfthDoctor1/ESP32-Test",
+    "url": "https://github.com/LordPercivalXII/ESP32-Test",
     "redacted": true,
     "disallow_entry": true
   },
   "ard_plotting": {
     "name": "ArduinoPlotting",
     "description": "Test Plotting through the use of Arduino add-ons as input variables for plotting.",
-    "url": "https://github.com/TwelfthDoctor1/ArduinoPlotting",
+    "url": "https://github.com/LordPercivalXII/ArduinoPlotting",
     "redacted": false,
     "disallow_entry": false
   },
   "td1_py_bot": {
     "name": "TD1 Discord Python Bot",
-    "description": "A Discord Bot written up by TwelfthDoctor1 that uses the disnake library (originally discord.py) to communicate with the Discord API.",
-    "url": "https://github.com/TwelfthDoctor1/TD1-Discord-Python-Bot",
+    "description": "A Discord Bot written up by Lord Percival XII that uses the disnake library (originally discord.py) to communicate with the Discord API.",
+    "url": "https://github.com/LordPercivalXII/TD1-Discord-Python-Bot",
     "redacted": false,
     "disallow_entry": false
   },
   "mas_app_log": {
     "name": "MasterApprentice Logger",
     "description": "A Custom Python Logger.",
-    "url": "https://github.com/TwelfthDoctor1/MasterApprentice-Library",
-    "redacted": true,
+    "url": "https://github.com/LordPercivalXII/MasterApprentice-Library",
+    "redacted": false,
     "disallow_entry": false
   },
   "mod_archive": {
     "name": "TD1 TS4 Mods",
     "description": "This repository stores mod archives of TD1 TS4 Mods.",
-    "url": "https://github.com/TwelfthDoctor1/TD1-TS4-Mods",
+    "url": "https://github.com/L-P-TD1/TD1-TS4-Mods",
     "redacted": false,
     "disallow_entry": false
   },
   "script_repo": {
     "name": "TD1 TS4 Scriptology",
     "description": "This repository stores script tutorials and script information of TD1 TS4 Mods.",
-    "url": "https://github.com/TwelfthDoctor1/TD1-TS4-Scriptology",
+    "url": "https://github.com/L-P-TD1/TD1-TS4-Scriptology",
     "redacted": false,
     "disallow_entry": false
   },
   "lta_datamall": {
     "name": "LTA Datamall API Bus Service Testing",
     "description": "The code in this repository makes use of Land Transport Authority's (LTA) DataMall Dynamic API to call the bus arrival times for a specified bus stop.",
-    "url": "https://github.com/TwelfthDoctor1/BusSvcTesting",
+    "url": "https://github.com/LordPercivalXII/BusSvcTesting",
     "redacted": false,
     "disallow_entry": false
   },
   "bussvctelebot": {
     "name": "Bus Service Telegram Bot",
     "description": "The code in this repository makes use of Land Transport Authority's (LTA) DataMall Dynamic API to call the bus arrival times for a specified bus stop and output it into a Telegram Bot.",
-    "url": "https://github.com/TwelfthDoctor1/BusSvcTelegramBot",
+    "url": "https://github.com/LordPercivalXII/BusSvcTelegramBot",
     "redacted": false,
     "disallow_entry": false
   },
   "timedisplay": {
     "name": "TimeDisplay GUI",
     "description": "A clock application.",
-    "url": "https://github.com/TwelfthDoctor1/TimeDisplayGUI",
+    "url": "https://github.com/LordPercivalXII/TimeDisplayGUI",
     "redacted": false,
     "disallow_entry": false
   }

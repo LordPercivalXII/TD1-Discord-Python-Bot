@@ -18,6 +18,9 @@ def get_filename(file: Attachment):
     elif file.filename.startswith("Apprentice_Log"):
         return f"Apprentice_Log [{dt.day}-{dt.month}-{dt.year}  {dt.hour}:{dt.minute}:{dt.second}]"
 
+    else:
+        return None
+
 
 def check_for_issue(line):
     if line.startswith("[ERROR"):
@@ -35,12 +38,16 @@ async def handle_logfile(log_file: Attachment, user: User, ctx: Context or Appli
     is_error_sector = False
     encountered_cutoff = True
 
+    error_list = []
+    warn_list = []
+    debug_lst = []
+
     # Creation of Blank File for Errno 2 Avoidance
     # temp_file = open(filename, "x")
     # temp_file.close()
 
     # Directory Exist Check & Creation
-    if os.path.exists(LOGGER_ARCHIVE_DIR) is False:
+    if not os.path.exists(LOGGER_ARCHIVE_DIR):
         os.makedirs(LOGGER_ARCHIVE_DIR)
 
     await log_file.save(filename)
@@ -66,14 +73,14 @@ async def handle_logfile(log_file: Attachment, user: User, ctx: Context or Appli
             else:
                 encountered_cutoff = False
 
-            if is_error_sector is True:
+            if is_error_sector:
                 if line != "\n":
                     #await ctx.responses.send_message(line) if hasattr(ctx, "responses") else \
                     await ctx.send(line)
                     # print(line)
 
 
-async def interpret_log_base(ctx: Context or ApplicationCommandInteraction):
+async def interpret_log_base(ctx: Context | ApplicationCommandInteraction):
     async for message in ctx.channel.history(limit=1, oldest_first=False):
         if message.author.id == ctx.author.id and message.content.find("determine_log") != -1:
             msg = message
@@ -82,7 +89,7 @@ async def interpret_log_base(ctx: Context or ApplicationCommandInteraction):
             return await ctx.send("Unknown trigger point usage of command.")
 
     if len(msg.attachments) == 0:
-        await ctx.send(
+        return await ctx.send(
             "**Please attach a MasterApprentice Log File in the command before sending.** [Files Accepted: Master_Log.log OR Apprentice_Log.log]")
 
     for file in msg.attachments:
@@ -94,6 +101,8 @@ async def interpret_log_base(ctx: Context or ApplicationCommandInteraction):
         # print(f"The file {file.filename} is a MasterApprentice Log File.")
 
         await handle_logfile(file, ctx.author, ctx)
+
+    return None
 
 
 async def delete_old_user_logs(ctx: Context or ApplicationCommandInteraction):

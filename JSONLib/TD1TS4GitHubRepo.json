@@ -2,11 +2,11 @@
   "mod_archive": {
     "name": "TD1 TS4 Mods",
     "description": "This repository stores mod archives of TD1 TS4 Mods.",
-    "url": "https://github.com/TwelfthDoctor1/TD1-TS4-Mods"
+    "url": "https://github.com/LordPercivalXII/TD1-TS4-Mods"
   },
   "script_repo": {
     "name": "TD1 TS4 Scriptology",
     "description": "This repository stores script tutorials and script information of TD1 TS4 Mods.",
-    "url": "https://github.com/TwelfthDoctor1/TD1-TS4-Scriptology"
+    "url": "https://github.com/LordPercivalXII/TD1-TS4-Scriptology"
   }
 }

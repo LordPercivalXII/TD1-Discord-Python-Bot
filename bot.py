@@ -175,7 +175,7 @@ async def dm_slash(inter: ApplicationCommandInteraction, recipient: User, *, mes
     return await dm_cmd(inter, recipient, message)
 
 
-@client.slash_command(name="dm_TD1", description="Sends a Direct Message to TwelfthDoctor1.")
+@client.slash_command(name="dm_lordpercivalxii", description="Sends a Direct Message to Lord Percival XII.")
 async def dm_TD1_slash(inter: ApplicationCommandInteraction, *, message):
     return await dm_TD1_cmd(inter, client, message)
 
@@ -345,9 +345,14 @@ async def list_td1_ts4_mods_slash(inter: ApplicationCommandInteraction):
     await inter.response.send_message(embed=github_embed)
 
 
-@client.slash_command(name="set_reminder", description="Set a reminder on the Bot.")
-async def set_reminder_slash(inter: ApplicationCommandInteraction):
-    pass
+# @client.slash_command(name="set_reminder", description="Set a reminder on the Bot.")
+# async def set_reminder_slash(inter: ApplicationCommandInteraction):
+#     pass
+
+# @client.slash_command(name="get_arrival_time", description="NULL")
+# async def get_bus_arrival_time_slash(inter: ApplicationCommandInteraction):
+#     pass
+
 
 
 # ======================================================================================================================
