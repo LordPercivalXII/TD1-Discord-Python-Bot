@@ -71,7 +71,7 @@ class CommandHandler:
 
         return False
 
-    def check_min_lvl(self,):
+    def check_min_lvl(self):
         if self.min_level == self.DEVELOPER:
             return self.is_dev()
         elif self.min_level == self.ADMIN:

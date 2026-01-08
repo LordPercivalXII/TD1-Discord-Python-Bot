@@ -33,16 +33,14 @@ def delete_old_logs(main_dir, starting_text):
     """
     # x is File Directory
     # y is Sub File Directories in the Directory in List form
-    # z is Files in theDirectory in List form
+    # z is Files in the Directory in List form
     # i is the individual file derived from z
 
     for (x, y, z) in os.walk(main_dir):
-
+        # Do not search beyond Main Dir. - To not induce lag.
+        if x != main_dir:
+            return
         for i in z:
-
-            if os.path.exists(i) is False:
-                continue
-
             # Any files that start with the starting text will be deleted
             if str(i).startswith(starting_text):
                 os.remove(os.path.join(main_dir, i))

@@ -29,11 +29,7 @@ INTENTS = Intents.all()
 # ======================================================================================================================
 # Classes
 class CoreFunctionService(BaseLoggerService):
-    def __init__(self):
-        super(CoreFunctionService, self).__init__(
-            module_name=f"TD1 Python Bot | {self.__class__.__name__}",
-            main_owner="TwelfthDoctor1"
-        )
+    pass
 
 
 class TD1BotContext(Context):

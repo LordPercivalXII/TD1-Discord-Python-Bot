@@ -32,14 +32,14 @@ async def on_init(guilds: [Guild]):
     :return:
     """
     # Directory Exist Check & Creation
-    if os.path.exists(SERVER_DATA_PATH) is False:
+    if not os.path.exists(SERVER_DATA_PATH):
         os.makedirs(SERVER_DATA_PATH)
 
     SERVER_DATA_SERVICE.info("Starting ServerData Init Check...")
 
     for guild in guilds:
         data_file = os.path.join(SERVER_DATA_PATH, f"{guild.id}.json")
-        if os.path.exists(data_file) is False:
+        if not os.path.exists(data_file):
 
             SERVER_DATA_SERVICE.info(f"ServerData Check on [{guild.name}] does not exist in database.\n\nCreating new entry...")
 
@@ -84,7 +84,7 @@ async def on_init(guilds: [Guild]):
                     else:
                         datacheck = False
 
-                if datacheck is False:
+                if not datacheck:
                     data_dict.update({
                         entry: infill_data(entry, guild)
                     })
@@ -111,7 +111,7 @@ async def on_init(guilds: [Guild]):
 
     admin_data_file = os.path.join(SERVER_DATA_PATH, f"AdminData.json")
 
-    if os.path.exists(admin_data_file) is False:
+    if not os.path.exists(admin_data_file):
 
         SERVER_DATA_SERVICE.info(f"AdminData Check on Entry does not exist. Creating...")
 
@@ -143,6 +143,8 @@ def infill_data(key: str, guild: Guild = None):
         return []
     elif key == "allow_channel":
         return False
+    else:
+        return None
 
 
 def get_serverdata_value(key: str, guild: Guild):
@@ -161,7 +163,7 @@ def get_serverdata_value(key: str, guild: Guild):
 
 
 def key_value_changeable(key):
-    if SERVER_DATA_CHANGEABLE[SERVER_DATA_STRUCTURE.index(key)] is True:
+    if SERVER_DATA_CHANGEABLE[SERVER_DATA_STRUCTURE.index(key)]:
         return True
 
     else:
@@ -176,7 +178,7 @@ def update_serverdata_value(key: str, value, guild: Guild):
 
         c_data_file.close()
 
-    if key_value_changeable(key) is False:
+    if not key_value_changeable(key):
         return False
 
     for (k, v) in data_dict.items():

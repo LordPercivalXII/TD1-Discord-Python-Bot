@@ -4,11 +4,17 @@ import urllib.error
 import enum
 from pathlib import Path
 from UtilLib.JSONParser import json_load
-from UtilLib.LoggerService import BaseLoggerService
+from UtilLib.LoggerService import LoggerClass
 
 
-class StringHandlerService(BaseLoggerService):
-    pass
+class StringHandlerService(LoggerClass):
+    def __init__(self):
+        super(StringHandlerService, self).__init__(
+            module_name=f"TD1 Python Bot | {self.__class__.__name__}",
+            main_owner="TwelfthDoctor1",
+            log_enable=False,
+            mlog_enable=True
+        )
 
 
 STRING_LIB = os.path.join(Path(__file__).resolve().parent.parent, "StringLib")
