@@ -237,7 +237,7 @@ async def target_end_paraloop_slash(inter: ApplicationCommandInteraction, user: 
 
 @client.slash_command(name="ts4_github_repo", description="Returns a list of TD1 TS4 GitHub Repositories")
 async def list_ts4_repo_slash(inter: ApplicationCommandInteraction):
-    github_json = JSONHandler("TD1TS4GitHubRepo", "", False)
+    github_json = JSONHandler("TD1TS4GitHubRepo", "", True)
 
     repo_list = github_json.return_json()
 
