@@ -56,7 +56,7 @@ def setDebugState_Log(state: bool, mlog_bypass: bool = False, bypass_fp: Path | 
 # Main Path File for Project
 # Set .parent level if MasterApprentice Library is nested
 MAIN_DIR = Path(__file__).resolve().parent.parent
-FILENAME = "TimeDisplay"
+FILENAME = "TD1_Discord_Bot"
 AUTHOR = __author__
 
 

@@ -1,353 +1,196 @@
 import os
-import disnake
-import json
-from disnake import Attachment, User, ApplicationCommandInteraction, Guild
-from disnake.ext.commands import Context
+from disnake import User, Guild
 from pathlib import Path
+from UtilLib.JSONHandler import JSONHandler
 from UtilLib.LoggerService import BaseLoggerService
-from UtilLib.JSONParser import json_dump, json_load
 
 
-# Base Structure to reference creation & update of ServerData
-SERVER_DATA_STRUCTURE = ["server_guild", "admins", "server_owner", "admin_roles", "allow_events"]
-
-# Structure to disallow tampering of data values for explicit keys - non-specific handling update
-SERVER_DATA_CHANGEABLE = [False, False, False, False, True]
+# Base Structure to reference ServerData to disallow tampering of data values for explicit keys - non-specific handling update
+SERVER_DATA_CHANGEABLE_STRUCTURE = {
+    "server_guild": False,
+    "admins": False,
+    "server_owner" : False,
+    "admin_roles": False,
+    "allow_events": True
+}
 
 
 class ServerDataHandlerService(BaseLoggerService):
     pass
 
 
-SERVER_DATA_SERVICE = ServerDataHandlerService()
 SERVER_DATA_PATH = Path(os.path.join(Path(__file__).resolve().parent.parent, "ServerData"))
 
 
-async def on_init(guilds: [Guild]):
-    """
-    Function to check on ServerData & AdminData on Bot Init.
+class ServerDataHandler:
+    def __init__(self):
+        self.admin_data = None
+        self.logger = ServerDataHandlerService()
+        self.server_data_ref: dict[str, JSONHandler] = dict()
 
-    Creation of files when file does not exist.
-    :param guilds:
-    :return:
-    """
-    # Directory Exist Check & Creation
-    if not os.path.exists(SERVER_DATA_PATH):
-        os.makedirs(SERVER_DATA_PATH)
+    async def on_init(self, guilds: list[Guild]):
+        """
+        Function to check on ServerData & AdminData on Bot Init.
 
-    SERVER_DATA_SERVICE.info("Starting ServerData Init Check...")
+        Creation of files when file does not exist.
+        :param guilds:
+        :return:
+        """
+        # Directory Exist Check & Creation
+        if not os.path.exists(SERVER_DATA_PATH):
+            os.makedirs(SERVER_DATA_PATH)
 
-    for guild in guilds:
-        data_file = os.path.join(SERVER_DATA_PATH, f"{guild.id}.json")
-        if not os.path.exists(data_file):
+        self.logger.info("Starting ServerData Init Check...")
 
-            SERVER_DATA_SERVICE.info(f"ServerData Check on [{guild.name}] does not exist in database.\n\nCreating new entry...")
+        # Server (Guild) Data Check
+        for guild in guilds:
+            guild_json = JSONHandler(str(guild.id), SERVER_DATA_PATH, False)
 
-            with open(data_file, "w") as c_data_file:
-                server_admins = [guild.owner_id]
+            self.logger.info(
+                f"ServerData Check on [{guild.name}]... (Please check logs for KV check state)"
+            )
 
-                server_data = {
-                    "server_guild": guild.id,
-                    "admins": server_admins,
-                    "server_owner": guild.owner_id,
-                    "admin_roles": [],
-                    "allow_events": False
-                }
-
-                data_json = json_dump(server_data)
-
-                SERVER_DATA_SERVICE.info(f"ServerData on [{guild.name}]:\n\n{data_json}")
-
-                c_data_file.write(data_json)
-
-                c_data_file.close()
-
-            SERVER_DATA_SERVICE.info(f"ServerData Entry on [{guild.name}] recorded into database. Going onto next entry (if any)...")
-
-        else:
-            SERVER_DATA_SERVICE.info(f"ServerData Check on [{guild.name}] exists in database. Check data entries...")
-
-            update_count = 0
-
-            with open(data_file, "r") as c_data_file:
-
-                data_dict = json_load(c_data_file.read())
-
-                c_data_file.close()
-
-            for entry in SERVER_DATA_STRUCTURE:
-                datacheck = False
-                for (k, v) in data_dict.items():
-                    if entry == k:
-                        datacheck = True
-                        break
-                    else:
-                        datacheck = False
-
-                if not datacheck:
-                    data_dict.update({
-                        entry: infill_data(entry, guild)
-                    })
-
-                    update_count += 1
-
-                    SERVER_DATA_SERVICE.info(f"ServerData missing [{entry}] entry, inserting...")
-
-            if update_count > 0:
-                data_json = json_dump(data_dict)
-
-                SERVER_DATA_SERVICE.info(f"Updated ServerData Entry on [{guild.name}]:\n\n{data_json}")
-
-                with open(data_file, "w") as c_data_file:
-                    c_data_file.write(data_json)
-
-                    c_data_file.close()
-
-                SERVER_DATA_SERVICE.info(f"ServerData Entry on [{guild.name}] updated. Going onto next entry (if any)...")
-            else:
-                SERVER_DATA_SERVICE.info(f"ServerData Entry on [{guild.name}] has up-to-date entries. Going onto next entry (if any)...")
-
-    SERVER_DATA_SERVICE.info(f"ServerData Init Check Process Complete. Going onto AdminData Init Check...")
-
-    admin_data_file = os.path.join(SERVER_DATA_PATH, f"AdminData.json")
-
-    if not os.path.exists(admin_data_file):
-
-        SERVER_DATA_SERVICE.info(f"AdminData Check on Entry does not exist. Creating...")
-
-        with open(admin_data_file, "w") as a_data_file:
-            admin_data = {
-                "admins": []
+            server_data_struct = {
+                "server_guild": guild.id,
+                "admins": [guild.owner_id],
+                "server_owner": guild.owner_id,
+                "admin_roles": [],
+                "allow_events": False
             }
 
-            admin_data_json = json_dump(admin_data)
+            guild_json.check_json(server_data_struct)
 
-            a_data_file.write(admin_data_json)
+            self.server_data_ref[str(guild.id)] = guild_json
 
-            a_data_file.close()
+            self.logger.info(f"ServerData Entry on [{guild.name}] complete. Going onto next entry (if any)...")
 
-    else:
-        SERVER_DATA_SERVICE.info(f"AdminData Check on Entry exists.")
+        self.logger.info(f"ServerData Init Check Process Complete. Going onto AdminData Init Check...")
 
-    SERVER_DATA_SERVICE.info(f"Full Data Init Check Process Complete.")
+        # Bot Admin Check
+        self.admin_data = JSONHandler("AdminData", SERVER_DATA_PATH, False)
 
+        admin_data_struct = {
+            "admins": []
+        }
 
-def infill_data(key: str, guild: Guild = None):
-    if key == "server_guild":
-        return guild.id
-    elif key == "server_admins":
-        return [guild.owner_id]
-    elif key == "server_owner":
-        return guild.owner_id
-    elif key == "admin_roles":
-        return []
-    elif key == "allow_channel":
-        return False
-    else:
-        return None
+        self.admin_data.check_json(admin_data_struct)
 
+        self.logger.info(f"AdminData Check on Entry exists.")
 
-def get_serverdata_value(key: str, guild: Guild):
-    data_file = os.path.join(SERVER_DATA_PATH, f"{guild.id}.json")
+        self.logger.info(f"Full Data Init Check Process Complete.")
 
-    with open(data_file, "r") as c_data_file:
-        data_dict = json_load(c_data_file.read())
+    @staticmethod
+    def infill_data(key: str, guild: Guild):
+        if key == "server_guild":
+            return guild.id
+        elif key == "server_admins":
+            return [guild.owner_id]
+        elif key == "server_owner":
+            return guild.owner_id
+        elif key == "admin_roles":
+            return []
+        elif key == "allow_channel":
+            return False
+        else:
+            return None
 
-        c_data_file.close()
+    def get_serverdata_value(self, key: str, guild: Guild):
+        guild_json = self.server_data_ref[str(guild.id)]
+        return guild_json.return_specific_json(key)
 
-    for (k, v) in data_dict.items():
-        if k == key:
-            return v
+    @staticmethod
+    def key_value_changeable(key):
+        return SERVER_DATA_CHANGEABLE_STRUCTURE[key]
 
-    return None
+    def update_serverdata_value(self, key: str, value, guild: Guild):
+        if not self.key_value_changeable(key):
+            return False
 
+        guild_json = self.server_data_ref[str(guild.id)]
+        guild_json.update_specific_json(key, value)
+        guild_json.update_json_file()
 
-def key_value_changeable(key):
-    if SERVER_DATA_CHANGEABLE[SERVER_DATA_STRUCTURE.index(key)]:
         return True
 
-    else:
-        return False
+    async def register_srv_admin(self, user: User, guild: Guild):
+        guild_json = self.server_data_ref[str(guild.id)]
 
-
-def update_serverdata_value(key: str, value, guild: Guild):
-    data_file = os.path.join(SERVER_DATA_PATH, f"{guild.id}.json")
-
-    with open(data_file, "r") as c_data_file:
-        data_dict = json_load(c_data_file.read())
-
-        c_data_file.close()
-
-    if not key_value_changeable(key):
-        return False
-
-    for (k, v) in data_dict.items():
-        if k == key:
-            data_dict[k] = value
-
-            with open(data_file, "w") as c_data_file:
-                data_json = json_dump(data_dict)
-                c_data_file.write(data_json)
-
-                c_data_file.close()
-
-            return True
-
-    return False
-
-
-async def register_srv_admin(user: User, server: Guild):
-    data_file = os.path.join(SERVER_DATA_PATH, f"{server.id}.json")
-
-    with open(data_file, "r") as c_data_file:
-        data_dict = json_load(c_data_file.read())
-
-        c_data_file.close()
-
-    if user.id == data_dict["server_owner"]:
-        return False
-
-    for admin in data_dict["admins"]:
-        if admin == user.id:
+        if user.id == guild_json.return_specific_json("server_owner"):
             return False
 
-    data_dict["admins"].append(user.id)
+        admin_list: list = guild_json.return_specific_json("admins")
 
-    with open(data_file, "w") as c_data_file:
-        data_json = json_dump(data_dict)
-        c_data_file.write(data_json)
-
-        c_data_file.close()
-
-    return True
-
-
-async def deregister_srv_admin(user: User, server: Guild):
-    data_file = os.path.join(SERVER_DATA_PATH, f"{server.id}.json")
-
-    with open(data_file, "r") as c_data_file:
-        data_dict = json_load(c_data_file.read())
-
-        c_data_file.close()
-
-    if user.id == data_dict["server_owner"]:
-        return False
-
-    for admin in data_dict["admins"]:
-        if admin == user.id:
-            data_dict["admins"].remove(user.id)
-
-            with open(data_file, "w") as c_data_file:
-                data_json = json_dump(data_dict)
-                c_data_file.write(data_json)
-
-                c_data_file.close()
-
-            return True
-
-    return False
-
-
-def acquire_data(key: str, server: Guild):
-    data_file = os.path.join(SERVER_DATA_PATH, f"{server.id}.json")
-
-    with open(data_file, "r") as c_data_file:
-        data_dict = json_load(c_data_file.read())
-
-        c_data_file.close()
-
-    for (k, v) in data_dict.items():
-        if k == key:
-            return data_dict[key]
-
-    return None
-
-
-async def register_admin(user: User):
-    from bot import BOT_OWNER_ID
-
-    admin_data_file = os.path.join(SERVER_DATA_PATH, f"AdminData.json")
-
-    with open(admin_data_file, "r") as a_data_file:
-        data_dict = json_load(a_data_file.read())
-
-        a_data_file.close()
-
-    if user.id == BOT_OWNER_ID:
-        return False
-
-    for (k, v) in data_dict.items():
-        if v == user.id:
+        if user.id in admin_list:
             return False
 
-    data_dict["admins"].append(user.id)
+        admin_list.append(user.id)
 
-    with open(admin_data_file, "w") as c_data_file:
-        data_json = json_dump(data_dict)
-        c_data_file.write(data_json)
+        guild_json.update_specific_json("admins", admin_list)
+        guild_json.update_json_file()
 
-        c_data_file.close()
+        return True
 
-    return True
+    async def deregister_srv_admin(self, user: User, guild: Guild):
+        guild_json = self.server_data_ref[str(guild.id)]
 
+        if user.id == guild_json.return_specific_json("server_owner"):
+            return False
 
-async def deregister_admin(user: User):
-    from bot import BOT_OWNER_ID
+        admin_list: list = guild_json.return_specific_json("admins")
 
-    admin_data_file = os.path.join(SERVER_DATA_PATH, f"AdminData.json")
+        if user.id in admin_list:
+            admin_list.remove(user.id)
 
-    with open(admin_data_file, "r") as a_data_file:
-        data_dict = json_load(a_data_file.read())
+            guild_json.update_specific_json("admins", admin_list)
+            guild_json.update_json_file()
 
-        a_data_file.close()
+            return True
 
-    if user.id == BOT_OWNER_ID:
         return False
 
-    for (k, v) in data_dict.items():
-        if v == user.id:
-            data_dict["admins"].remove(user.id)
+    async def register_admin(self, user: User):
+        from bot import BOT_OWNER_ID
 
-            with open(admin_data_file, "w") as c_data_file:
-                data_json = json_dump(data_dict)
-                c_data_file.write(data_json)
+        if user.id == BOT_OWNER_ID:
+            return False
 
-                c_data_file.close()
+        admin_data_list: list = self.admin_data.return_specific_json("admins")
+
+        if user.id in admin_data_list:
+            return False
+
+        admin_data_list.append(user.id)
+
+        self.admin_data.update_json("admins", admin_data_list)
+        self.admin_data.update_json_file()
+
+        return True
+
+    async def deregister_admin(self, user: User):
+        from bot import BOT_OWNER_ID
+
+        if user.id == BOT_OWNER_ID:
+            return False
+
+        admin_data_list: list = self.admin_data.return_specific_json("admins")
+
+        if user.id in admin_data_list:
+            admin_data_list.remove(user.id)
+
+            self.admin_data.update_json("admins", admin_data_list)
+            self.admin_data.update_json_file()
 
             return True
 
-    return False
+        return False
 
+    def acquire_admin(self, user: int):
+        return user in self.admin_data.return_specific_json("admins")
 
-def acquire_admin(user: int):
-    admin_data_file = os.path.join(SERVER_DATA_PATH, f"AdminData.json")
+    async def allowable_events(self, value: bool, guild: Guild):
+        guild_json = self.server_data_ref[str(guild.id)]
 
-    with open(admin_data_file, "r") as a_data_file:
-        data_dict = json_load(a_data_file.read())
+        guild_json.update_specific_json("allow_events", value)
+        guild_json.update_json_file()
 
-        a_data_file.close()
-
-    for (k, v) in data_dict.items():
-        if v == user:
-            return True
-
-    return False
-
-
-async def allowable_events(value: bool, server: Guild):
-    data_file = os.path.join(SERVER_DATA_PATH, f"{server.id}.json")
-
-    with open(data_file, "r") as c_data_file:
-        data_dict = json_load(c_data_file.read())
-
-        c_data_file.close()
-
-    data_dict["allow_events"] = value
-
-    with open(data_file, "w") as c_data_file:
-        data_json = json_dump(data_dict)
-        c_data_file.write(data_json)
-
-        c_data_file.close()
-
-    return True
+        return True

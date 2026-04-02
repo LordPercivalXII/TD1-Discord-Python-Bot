@@ -8,7 +8,8 @@ async def lookup_dev_cmd(ctx: Context or ApplicationCommandInteraction, client):
     cmd_handler = CommandHandler(
         min_level=CommandHandler.DEVELOPER,
         user_id=ctx.author.id,
-        server=ctx.guild
+        server=ctx.guild,
+        server_data=ctx.server_data_handler
     )
 
     eligibility = await cmd_handler.check_cmd_req(

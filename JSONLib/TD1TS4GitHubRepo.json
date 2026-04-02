@@ -2,11 +2,50 @@
   "mod_archive": {
     "name": "TD1 TS4 Mods",
     "description": "This repository stores mod archives of TD1 TS4 Mods.",
-    "url": "https://github.com/LordPercivalXII/TD1-TS4-Mods"
+    "url": "https://github.com/L-P-TD1/TD1-TS4-Mods",
+    "redacted": false,
+    "disallow_entry": false
   },
   "script_repo": {
     "name": "TD1 TS4 Scriptology",
     "description": "This repository stores script tutorials and script information of TD1 TS4 Mods.",
-    "url": "https://github.com/LordPercivalXII/TD1-TS4-Scriptology"
+    "url": "https://github.com/L-P-TD1/TD1-TS4-Scriptology",
+    "redacted": false,
+    "disallow_entry": false
+  },
+  "ts4_devaccesspanel": {
+    "name": "ts4-devaccesspanel",
+    "description": "This repository stores scripts for the DevAccessPanel mod.",
+    "url": "https://github.com/L-P-TD1/ts4-devaccesspanel",
+    "redacted": true,
+    "disallow_entry": false
+  },
+  "ts4_masterspells": {
+    "name": "ts4-masterspells",
+    "description": "This repository stores scripts for the MasterSpells mod.",
+    "url": "https://github.com/L-P-TD1/ts4-masterspells",
+    "redacted": true,
+    "disallow_entry": false
+  },
+  "ts4_occulthybrid": {
+    "name": "ts4-occulthybrid",
+    "description": "This repository stores scripts for the OccultHybrid mod.",
+    "url": "https://github.com/L-P-TD1/ts4-occulthybrid",
+    "redacted": true,
+    "disallow_entry": false
+  },
+  "ts4_ttv": {
+    "name": "ts4-ttv",
+    "description": "This repository stores scripts for the Travel To Venue mod.",
+    "url": "https://github.com/L-P-TD1/ts4-ttv",
+    "redacted": true,
+    "disallow_entry": false
+  },
+  "ts4_tms": {
+    "name": "ts4-tms",
+    "description": "This repository stores scripts for the Teleport Memory System mod.",
+    "url": "https://github.com/L-P-TD1/ts4-tms",
+    "redacted": true,
+    "disallow_entry": false
   }
 }

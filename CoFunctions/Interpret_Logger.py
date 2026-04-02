@@ -109,7 +109,8 @@ async def delete_old_user_logs(ctx: Context or ApplicationCommandInteraction):
     cmd_handler = CommandHandler(
         min_level=CommandHandler.DEVELOPER,
         user_id=ctx.author.id,
-        server=Context.guild
+        server=Context.guild,
+        server_data=ctx.server_data_handler
     )
 
     await cmd_handler.check_cmd_req(ctx)

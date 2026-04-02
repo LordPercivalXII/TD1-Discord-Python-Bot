@@ -20,6 +20,13 @@
     "redacted": false,
     "disallow_entry": false
   },
+  "prog_plotting": {
+    "name": "ProgramPlotting",
+    "description": "Program Plotting Script that outputs a graph and log.",
+    "url": "https://github.com/LordPercivalXII/ProgramPlotting",
+    "redacted": false,
+    "disallow_entry": false
+  },
   "td1_py_bot": {
     "name": "TD1 Discord Python Bot",
     "description": "A Discord Bot written up by Lord Percival XII that uses the disnake library (originally discord.py) to communicate with the Discord API.",

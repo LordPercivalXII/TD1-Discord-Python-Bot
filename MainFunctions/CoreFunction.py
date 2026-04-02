@@ -3,15 +3,13 @@ import os
 import subprocess
 import sys
 import time
-from disnake import Activity, ActivityType, Game, Embed, Colour, Intents, ApplicationCommandInteraction, Member, \
-    TextChannel, Guild, Emoji, PartialEmoji, Status
-from disnake.abc import GuildChannel
+from disnake import Activity, ActivityType, Embed, Intents, ApplicationCommandInteraction, Member, \
+    TextChannel, Guild, Status
 from disnake.ext import commands
-from disnake.ext.commands import Context
+from disnake.ext.commands import Context, CommandSyncFlags
 from VersionControl import __version__ as proj_vers, __copyright__ as proj_cpr
-from MasterApprenticeLib.TD1_Lib_MasterLogger import MasterLogger
 from MasterApprenticeLib.TD1_Lib_MasterApprentice_Control import __version__ as log_vers, __copyright__ as log_cpr
-from CoFunctions.ServerDataHandler import on_init, get_serverdata_value, update_serverdata_value, allowable_events
+from CoFunctions.ServerDataHandler import ServerDataHandler
 from UtilLib.LoggerService import BaseLoggerService
 from UtilLib.ServicingPipeline import check_current_version
 from UtilLib.EmojiHandler import get_emoji
@@ -25,6 +23,10 @@ START_TIME = time.time()
 # Bot Intents [API]
 INTENTS = Intents.all()
 
+COMMAND_SYNC_FLAGS = CommandSyncFlags.default()
+
+# ServerDataHandler Parsing
+SERVER_DATA_HANDLER = ServerDataHandler()
 
 # ======================================================================================================================
 # Classes
@@ -54,13 +56,19 @@ class TD1BotClient(commands.Bot):
             # Removal of test guilds, causing issues to CMD Globalisation
             # test_guilds=[604082560217120778, 569137415051280404, 949322786713788426],
             intents=INTENTS,
-            sync_commands_debug=True
+            command_sync_flags=COMMAND_SYNC_FLAGS
         )
         # self.InternalHandler = TD1BotClient()
 
         # Logger Init - Shift from Raw MasterLogger to Logger Service
         self.master_logger = CoreFunctionService()
         self.dt = datetime.datetime
+        self.server_data_handler = ServerDataHandler()
+
+        # Set Attrs
+        # This allows Contexts to have ServerDataHandler in their class for ref by other classes.
+        setattr(Context, "server_data_handler", self.server_data_handler)
+        setattr(ApplicationCommandInteraction, "server_data_handler", self.server_data_handler)
 
     async def init_presence(self):
         """
@@ -158,7 +166,7 @@ class TD1BotClient(commands.Bot):
         self.master_logger.info(f"Main Bot Service Started. -> [BOT USER]: {self.user}")
 
         # Check ServerData
-        await on_init(self.guilds)
+        await self.server_data_handler.on_init(self.guilds)
 
         # Set Init Presence
         await self.init_presence()
@@ -177,21 +185,21 @@ class TD1BotClient(commands.Bot):
         guild: Guild = member.guild
 
         event_channel: TextChannel = guild.system_channel
-        allow_events: bool = get_serverdata_value("allow_events", guild)
+        allow_events: bool = self.server_data_handler.get_serverdata_value("allow_events", guild)
 
         if allow_events is True and event_channel is not None:
             await event_channel.send(f"Mind the Gap between the train and the platform. Welcome, {member.name} to the {get_emoji(self.emojis, '<:GBTHVector:848909712934174764>')} {guild.name} Express.")
 
     async def on_member_remove(self, member: Member):
         """
-        EVent when a member leaves the server.
+        Event when a member leaves the server.
         :param member: Member
         :return:
         """
         guild: Guild = member.guild
 
         event_channel: TextChannel = guild.system_channel
-        allow_events: bool = get_serverdata_value("allow_events", guild)
+        allow_events: bool = self.server_data_handler.get_serverdata_value("allow_events", guild)
 
         if allow_events is True and event_channel is not None:
             await event_channel.send(f"The train is leaving the station. Goodbye, {member.name}, and thank you for your patronage on the {get_emoji(self.emojis, '<:GBTHVector:848909712934174764>')} {guild.name} Express.")
@@ -207,7 +215,8 @@ class TD1BotClient(commands.Bot):
         cmd_handler = CommandHandler(
             min_level=CommandHandler.DEVELOPER,
             user_id=ctx.author.id,
-            server=ctx.guild
+            server=ctx.guild,
+            server_data=ctx.server_data_handler
         )
 
         eligibility = await cmd_handler.check_cmd_req(ctx)
@@ -231,7 +240,8 @@ class TD1BotClient(commands.Bot):
         cmd_handler = CommandHandler(
             min_level=CommandHandler.DEVELOPER,
             user_id=ctx.author.id,
-            server=ctx.guild
+            server=ctx.guild,
+            server_data=ctx.server_data_handler
         )
 
         eligibility = await cmd_handler.check_cmd_req(ctx)
@@ -281,13 +291,14 @@ class TD1BotClient(commands.Bot):
         cmd_handler = CommandHandler(
             min_level=CommandHandler.DEVELOPER,
             user_id=ctx.author.id,
-            server=ctx.guild
+            server=ctx.guild,
+            server_data=ctx.server_data_handler
         )
 
         eligibility = await cmd_handler.check_cmd_req(ctx)
 
         if eligibility is False:
-            return
+            return None
 
         await self.msg_presence(self.determine_activity(activity), args, status)
 
@@ -304,13 +315,14 @@ class TD1BotClient(commands.Bot):
         cmd_handler = CommandHandler(
             min_level=CommandHandler.DEVELOPER,
             user_id=ctx.author.id,
-            server=ctx.guild
+            server=ctx.guild,
+            server_data=ctx.server_data_handler
         )
 
         eligibility = await cmd_handler.check_cmd_req(ctx)
 
         if eligibility is False:
-            return
+            return None
 
         await self.init_presence()
 
@@ -334,21 +346,21 @@ class TD1BotClient(commands.Bot):
         else:
             return ActivityType.playing
 
-    @staticmethod
-    async def update_serverdata_cmd(ctx: Context or ApplicationCommandInteraction, value: bool):
+    async def update_serverdata_cmd(self, ctx: Context or ApplicationCommandInteraction, value: bool):
         cmd_handler = CommandHandler(
             min_level=CommandHandler.SRV_OWNER,
             max_level=CommandHandler.SRV_OWNER,
             server=ctx.guild,
-            user_id=ctx.author.id
+            user_id=ctx.author.id,
+            server_data=ctx.server_data_handler
         )
 
         eligibility = await cmd_handler.check_cmd_req(ctx)
 
         if eligibility is False:
-            return
+            return None
 
-        await allowable_events(value, ctx.guild)
+        await self.server_data_handler.allowable_events(value, ctx.guild)
 
         return await ctx.response.send_message(f"Allowable Events for {ctx.guild.name} is set to {value}.") if hasattr(ctx, "response") \
             else await ctx.send(f"Allowable Events for {ctx.guild.name} is set to {value}.")
@@ -367,3 +379,6 @@ class TD1BotClient(commands.Bot):
             return Status.streaming
         else:
             return Status.online
+
+    def return_server_handler(self):
+        return self.server_data_handler

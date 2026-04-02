@@ -1,23 +1,19 @@
 import argparse
 import datetime
-import disnake
-import subprocess
-import sys
 import os
-from disnake import User, CommandInteraction, ApplicationCommandInteraction, Embed, InteractionMessage
-from disnake.ext.commands import command, Context, is_owner, guild_only
+from disnake import User, ApplicationCommandInteraction, Embed
+from disnake.ext.commands import Context
 from dotenv import load_dotenv
 from pathlib import Path
 from CoFunctions.Paraloop import end_paraloop, end_paraloop_targeted
 from MainFunctions.CoreFunction import TD1BotClient
 from MainFunctions.DMHandler import dm_cmd, dm_TD1_cmd
-from CoFunctions.Interpret_Logger import handle_logfile, interpret_log_base
-from UtilLib.CommandLevel import CommandHandler
+from CoFunctions.Interpret_Logger import interpret_log_base
 from UtilLib.DevTools import lookup_dev_cmd
 from UtilLib.EmojiHandler import get_emoji
-from VersionControl import __version__ as proj_vers, __copyright__ as proj_cpr
-from MasterApprenticeLib.TD1_Lib_MasterApprentice_Control import __version__ as log_vers, __copyright__ as log_cpr
-from MainFunctions.JSONHandler import JSONHandler
+from VersionControl import __version__ as proj_vers
+from MasterApprenticeLib.TD1_Lib_MasterApprentice_Control import __version__ as log_vers
+from UtilLib.JSONHandler import JSONHandler
 
 # ======================================================================================================================
 # Code Variable Arguments
@@ -241,7 +237,7 @@ async def target_end_paraloop_slash(inter: ApplicationCommandInteraction, user: 
 
 @client.slash_command(name="ts4_github_repo", description="Returns a list of TD1 TS4 GitHub Repositories")
 async def list_ts4_repo_slash(inter: ApplicationCommandInteraction):
-    github_json = JSONHandler("TD1TS4GitHubRepo")
+    github_json = JSONHandler("TD1TS4GitHubRepo", "", False)
 
     repo_list = github_json.return_json()
 
@@ -261,18 +257,23 @@ async def list_ts4_repo_slash(inter: ApplicationCommandInteraction):
     )
 
     for repo, repo_data in repo_list.items():
-        github_embed.add_field(
-            name=repo_data["name"],
-            value=f"{repo_data['description']}\n\n"
-                  f"-> [View Repository]({repo_data['url']})\n"
-        )
+        if repo_data['disallow_entry'] is False:
+            desc = f"{repo_data['description']}"
+
+            if repo_data['redacted'] is False:
+                desc += f"\n\n-> [View Repository]({repo_data['url']})\n"
+
+            github_embed.add_field(
+                name=repo_data["name"],
+                value=desc
+            )
 
     await inter.response.send_message(embed=github_embed)
 
 
 @client.slash_command(name="td1_github_repo", description="Returns a list of TD1 GitHub Repositories")
 async def list_git_repo_slash(inter: ApplicationCommandInteraction):
-    github_json = JSONHandler("TD1GitHubRepo")
+    github_json = JSONHandler("TD1GitHubRepo", "", True)
 
     repo_list = github_json.return_json()
 
@@ -307,7 +308,7 @@ async def list_git_repo_slash(inter: ApplicationCommandInteraction):
 
 @client.slash_command(name="td1_ts4_mods", description="Returns a list of TD1 TS4 Mods")
 async def list_td1_ts4_mods_slash(inter: ApplicationCommandInteraction):
-    github_json = JSONHandler("TD1ModInfo")
+    github_json = JSONHandler("TD1ModInfo", "", True)
 
     repo_list = github_json.return_json()
 

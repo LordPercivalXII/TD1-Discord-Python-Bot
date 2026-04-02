@@ -44,10 +44,10 @@ class LocalizationHandler:
     def get_localized_str_from_id(self):
         data_path = os.path.join(STRING_LIB, self.convert_enum_into_str_fp())
 
-        if os.path.exists(data_path) is False:
+        if not os.path.exists(data_path):
             return self.fallback_str
 
-        pass
+        return None
 
     def formulate_str_data_from_json(self, fp):
         def offline_formulation():
@@ -59,9 +59,9 @@ class LocalizationHandler:
 
         def online_formulation():
             json_url = BASE_URL + self.convert_enum_into_str_fp()
-            json_req = urllib.request.Request(url=json_url, method="GET")
 
             try:
+                json_req = urllib.request.Request(url=json_url, method="GET")
                 with urllib.request.urlopen(json_req) as response:
                     self.json_data = json_load(response.read().decode("utf-8"))
 
@@ -88,12 +88,12 @@ class LocalizationHandler:
 
                 return False
 
-        if self.use_git is False:
+        if not self.use_git:
             offline_formulation()
 
         can_acquire = online_formulation()
 
-        if can_acquire is False:
+        if not can_acquire:
             offline_formulation()
 
     def convert_enum_into_str_fp(self):

@@ -1,9 +1,9 @@
 # Authoring, Attributes and Licensing
-__author__ = "TwelfthDoctor1"
+__author__ = "LordPercivalXII"
 __copyright__ = "Copyright 2022: TD1 Python Bot Project | © TD1 & TWoCC 2022"
-__credits__ = "TwelfthDoctor1"
+__credits__ = "LordPercivalXII"
 __license__ = "CC 4.0 or MIT"
 
 # Version Control Datum
-__version__ = "Developer Version 0.4.1"
+__version__ = "Developer Version 0.5.0"
 __status__ = "Development Testing"

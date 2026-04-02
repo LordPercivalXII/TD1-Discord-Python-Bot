@@ -1,7 +1,7 @@
 import os
-from disnake import ApplicationCommandInteraction
+from disnake import ApplicationCommandInteraction, Guild
 from disnake.ext.commands import Context
-from CoFunctions.ServerDataHandler import acquire_data, acquire_admin
+from CoFunctions.ServerDataHandler import ServerDataHandler
 
 
 class CommandHandler:
@@ -21,7 +21,7 @@ class CommandHandler:
     ADMIN = 4  # -> Bot Admin (Allocated by Developer)
     DEVELOPER = 5  # -> Bot Developer (ID Stored in ENV)
 
-    def __init__(self, min_level=ALL, max_level=None, user_id=0, server=None):
+    def __init__(self, min_level=ALL, max_level=None, user_id=0, server=None, server_data=None):
         """
         Parameters to set up the CommandHandler to restrict command usage.
 
@@ -32,10 +32,11 @@ class CommandHandler:
         :param user_id: The user id from the Context or Interaction
         :param server: The server from the Context or Interaction
         """
-        self.server = server
+        self.server: Guild = server
         self.min_level = min_level
         self.max_level = max_level if max_level is not None and max_level <= self.DEVELOPER else self.DEVELOPER
-        self.user_id = user_id
+        self.user_id: int = user_id
+        self.server_data: ServerDataHandler = server_data
 
     def is_dev(self):
         dev_env = int(os.getenv("DEVELOPER_ID"))
@@ -47,20 +48,20 @@ class CommandHandler:
             return False
 
     def is_admin(self):
-        if acquire_admin(self.user_id):
+        if self.server_data.acquire_admin(self.user_id):
             return True
         else:
             return False
 
     def is_server_owner(self):
-        owner_id = acquire_data("server_owner", self.server)
+        owner_id = self.server_data.get_serverdata_value("server_owner", self.server)
         if self.server.owner_id == owner_id and self.server.owner_id == self.user_id:
             return True
         else:
             return False
 
     def is_server_admin(self):
-        admins = acquire_data("server_admins", self.server)
+        admins = self.server_data.get_serverdata_value("server_admins", self.server)
 
         if len(admins) == 0:
             return False
