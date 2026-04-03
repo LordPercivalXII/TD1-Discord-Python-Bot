@@ -1,6 +1,6 @@
 # Authoring, Attributes and Licensing
 __author__ = "LordPercivalXII"
-__copyright__ = "Copyright 2022: TD1 Python Bot Project | © TD1 & TWoCC 2022"
+__copyright__ = "Copyright: TD1 Python Bot Project | © TD1 & TWoCC 2022"
 __credits__ = "LordPercivalXII"
 __license__ = "CC 4.0 or MIT"
 

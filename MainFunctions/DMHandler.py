@@ -36,22 +36,23 @@ class DirectMessageHandler:
 
 async def dm_cmd(ctx: Context or ApplicationCommandInteraction, recipient: User, message):
     if recipient is None:
-        return await ctx.response.send_message(f"Please specify a user to send a DM to.") if hasattr(ctx, "response") \
-            else await ctx.send(f"Please specify a user to send a DM to.")
+        return await ctx.response.send_message(f"Please specify a user to send a DM to.", ephemeral=True) if hasattr(ctx, "response") \
+            else await ctx.send(f"Please specify a user to send a DM to.", ephemeral=True)
 
     if message is None:
-        return await ctx.response.send_message(f"Please specify a message.") if hasattr(ctx, "response") else \
-            await ctx.send(f"Please specify a message.")
+        return await ctx.response.send_message(f"Please specify a message.", ephemeral=True) if hasattr(ctx, "response") else \
+            await ctx.send(f"Please specify a message.", ephemeral=True)
 
     dm_method = DirectMessageHandler(ctx, recipient)
     await dm_method.send_message(message)
-    await ctx.response.send_message("Message Sent.") if hasattr(ctx, "response") else await ctx.send("Message Sent.")
+    await ctx.response.send_message("Message Sent.", ephemeral=True) if hasattr(ctx, "response") else \
+        await ctx.send("Message Sent.", ephemeral=True)
 
 
 async def dm_TD1_cmd(ctx: Context or ApplicationCommandInteraction, client, message):
     if message is None:
-        return await ctx.response.send_message(f"Please specify a message.") if hasattr(ctx, "response") else \
-            await ctx.send(f"Please specify a message.")
+        return await ctx.response.send_message(f"Please specify a message.", ephemeral=True) if hasattr(ctx, "response") else \
+            await ctx.send(f"Please specify a message.", ephemeral=True)
 
     dm_method = DirectMessageHandler(
         ctx,
@@ -59,4 +60,5 @@ async def dm_TD1_cmd(ctx: Context or ApplicationCommandInteraction, client, mess
     )
 
     await dm_method.send_message(message)
-    await ctx.response.send_message("Message Sent.") if hasattr(ctx, "response") else await ctx.send("Message Sent.")
+    await ctx.response.send_message("Message Sent.", ephemeral=True) if hasattr(ctx, "response") else \
+        await ctx.send("Message Sent.", ephemeral=True)

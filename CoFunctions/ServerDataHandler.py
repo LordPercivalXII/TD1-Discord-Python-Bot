@@ -194,3 +194,6 @@ class ServerDataHandler:
         guild_json.update_json_file()
 
         return True
+
+    def get_servers(self):
+        return list(int(k) for k in self.server_data_ref.keys())

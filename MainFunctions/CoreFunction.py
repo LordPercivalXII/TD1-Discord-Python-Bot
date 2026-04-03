@@ -23,7 +23,7 @@ START_TIME = time.time()
 # Bot Intents [API]
 INTENTS = Intents.all()
 
-COMMAND_SYNC_FLAGS = CommandSyncFlags.default()
+COMMAND_SYNC_FLAGS = CommandSyncFlags.all()
 
 # ServerDataHandler Parsing
 SERVER_DATA_HANDLER = ServerDataHandler()
@@ -52,11 +52,12 @@ class TD1BotClient(commands.Bot):
 
             Bot Prefixes: ~ OR ! OR ?
             """,
-            owner_id=os.getenv("DEVELOPER_ID"),
+            owner_id=int(os.getenv("DEVELOPER_ID")),
             # Removal of test guilds, causing issues to CMD Globalisation
             # test_guilds=[604082560217120778, 569137415051280404, 949322786713788426],
             intents=INTENTS,
             command_sync_flags=COMMAND_SYNC_FLAGS
+            # test_guilds=[int(os.getenv("TEST_SERVER"))]
         )
         # self.InternalHandler = TD1BotClient()
 
@@ -224,8 +225,8 @@ class TD1BotClient(commands.Bot):
         if eligibility is False:
             return
 
-        await ctx.response.send_message("Shutting down bot...") if hasattr(ctx, "response") else \
-            await ctx.send("Shutting down bot...")
+        await ctx.response.send_message("Shutting down bot...", ephemeral=True) if hasattr(ctx, "response") else \
+            await ctx.send("Shutting down bot...", ephemeral=True)
         time.sleep(2)
         sys.exit("SHUTDOWN - INITIATED FROM COMMAND")
 
@@ -249,8 +250,8 @@ class TD1BotClient(commands.Bot):
         if eligibility is False:
             return
 
-        await ctx.response.send_message("Restarting bot...") if hasattr(ctx, "response") else \
-            await ctx.send("Restarting bot...")
+        await ctx.response.send_message("Restarting bot...", ephemeral=True) if hasattr(ctx, "response") else \
+            await ctx.send("Restarting bot...", ephemeral=True)
         time.sleep(2)
         subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
 
@@ -272,10 +273,28 @@ class TD1BotClient(commands.Bot):
         :param ctx: Context or ApplicationCommandInteraction
         :return:
         """
-        await ctx.response.send_message(f"Current Version: {proj_vers} [BOT] | {log_vers} [LOGGER]") if hasattr(ctx, "response") else \
-            await ctx.send(f"Current Version: {proj_vers} [BOT] | {log_vers} [LOGGER]")
+        embed = Embed(
+            title="Current Bot Version",
+            description=f"Bot Version: {proj_vers}\n"
+                        f"Logger Version: {log_vers}\n\n"
+                        f"{proj_cpr}\n"
+                        f"{log_cpr}",
+            timestamp=datetime.datetime(
+                year=datetime.datetime.now().year,
+                month=datetime.datetime.now().month,
+                day=datetime.datetime.now().day,
+                hour=datetime.datetime.now().hour,
+                minute=datetime.datetime.now().minute,
+                second=datetime.datetime.now().second
+            ),
+            colour=0x008369,
+        )
 
-        await ctx.send(f"[{proj_cpr}] | [{log_cpr}]")
+        # await ctx.response.send_message(f"Current Version: {proj_vers} [BOT] | {log_vers} [LOGGER]") if hasattr(ctx, "response") else \
+        #     await ctx.send(f"Current Version: {proj_vers} [BOT] | {log_vers} [LOGGER]")
+        #
+        # await ctx.send()
+        await ctx.send(embed=embed)
 
     async def update_presence(self, ctx: Context or ApplicationCommandInteraction, activity: str, status: str, args):
         """
@@ -302,8 +321,8 @@ class TD1BotClient(commands.Bot):
 
         await self.msg_presence(self.determine_activity(activity), args, status)
 
-        return await ctx.response.send_message("Presence Updated.") if hasattr(ctx, "response") \
-            else await ctx.send("Presence Updated.")
+        return await ctx.response.send_message("Presence Updated.", ephemeral=True) if hasattr(ctx, "response") \
+            else await ctx.send("Presence Updated.", ephemeral=True)
 
     async def set_init_presence(self, ctx: Context or ApplicationCommandInteraction):
         """
@@ -326,8 +345,8 @@ class TD1BotClient(commands.Bot):
 
         await self.init_presence()
 
-        return await ctx.response.send_message("Presence updated.") if hasattr(ctx, "response") \
-            else await ctx.send("Presence Updated.")
+        return await ctx.response.send_message("Presence updated.", ephemeral=True) if hasattr(ctx, "response") \
+            else await ctx.send("Presence Updated.", ephemeral=True)
 
     @staticmethod
     def determine_activity(activity):

@@ -55,7 +55,7 @@ def setDebugState_Log(state: bool, mlog_bypass: bool = False, bypass_fp: Path | 
 
 # Main Path File for Project
 # Set .parent level if MasterApprentice Library is nested
-MAIN_DIR = Path(__file__).resolve().parent.parent
+MAIN_DIR = os.path.join(Path(__file__).resolve().parent.parent, "ProjectLogFiles")
 FILENAME = "TD1_Discord_Bot"
 AUTHOR = __author__
 
@@ -74,4 +74,4 @@ delete_old_apprentice_log = True
 # Delete old MasterLogger Logs
 delete_old_master_log = True
 
-setDebugState_Log(False, False, Path(os.path.expanduser("~")).resolve()) # # Path(__file__).resolve().parent.parent
+setDebugState_Log(True, True, Path(os.path.expanduser("~")).resolve()) # # Path(__file__).resolve().parent.parent

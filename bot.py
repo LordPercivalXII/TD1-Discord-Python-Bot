@@ -1,7 +1,8 @@
 import argparse
 import datetime
 import os
-from disnake import User, ApplicationCommandInteraction, Embed
+from disnake import User, ApplicationCommandInteraction, Embed, Permissions
+from disnake.ext import commands
 from disnake.ext.commands import Context
 from dotenv import load_dotenv
 from pathlib import Path
@@ -94,11 +95,13 @@ async def test_type(ctx: Context, *, args):
 
 
 @client.command()
+@commands.is_owner()
 async def shutdown(ctx: Context):
     return await client.shutdown_bot(ctx)
 
 
 @client.command()
+@commands.is_owner()
 async def restart(ctx: Context):
     return await client.restart_bot(ctx)
 
@@ -109,6 +112,7 @@ async def interpret_MasApp_log(ctx: Context):
 
 
 @client.command()
+@commands.is_owner()
 async def set_init_presence(ctx: Context):
     return await client.set_init_presence(ctx)
 
@@ -119,6 +123,7 @@ async def uptime(ctx: Context):
 
 
 @client.command("set_presence")
+@commands.is_owner()
 async def set_msg_presence(ctx: Context, activity: str, status: str, *, args):
     return await client.update_presence(ctx, activity, status, args)
 
@@ -159,6 +164,7 @@ async def allowable_events(ctx: Context, value):
 
 
 @client.command()
+@commands.is_owner()
 async def emoji_test(ctx: Context, emoji_id):
     emoji = get_emoji(await ctx.guild.fetch_emojis(), emoji_id)
     return await ctx.reply(f"{emoji}")
@@ -181,12 +187,22 @@ async def ping_slash(inter: ApplicationCommandInteraction):
     return await client.ping_cmd(inter)
 
 
-@client.slash_command(name="shutdown", description="Shutdown the bot through non-Python Console means.")
+@client.slash_command(
+    name="shutdown",
+    description="Shutdown the bot through non-Python Console means.",
+    default_member_permissions=Permissions().none()
+)
+@commands.is_owner()
 async def shutdown_slash(inter: ApplicationCommandInteraction):
     return await client.shutdown_bot(inter)
 
 
-@client.slash_command(name="restart", description="Restart the bot through non-Python Console means.")
+@client.slash_command(
+    name="restart",
+    description="Restart the bot through non-Python Console means.",
+    default_member_permissions=Permissions().none()
+)
+@commands.is_owner()
 async def restart_slash(inter: ApplicationCommandInteraction):
     return await client.restart_bot(inter)
 
@@ -196,12 +212,22 @@ async def version_slash(inter: ApplicationCommandInteraction):
     return await client.version(inter)
 
 
-@client.slash_command(name="set_presence", description="Change the presence of the Bot.")
+@client.slash_command(
+    name="set_presence",
+    description="Change the presence of the Bot.",
+    default_member_permissions=Permissions().none()
+)
+@commands.is_owner()
 async def update_presence_slash(inter: ApplicationCommandInteraction, activity: str, status: str, *, message):
     return await client.update_presence(inter, activity, status, message)
 
 
-@client.slash_command(name="set_init_presence", description="Change the presence of the bot to the one used at startup.")
+@client.slash_command(
+    name="set_init_presence",
+    description="Change the presence of the bot to the one used at startup.",
+    default_member_permissions=Permissions().none()
+)
+@commands.is_owner()
 async def init_presence_slash(inter: ApplicationCommandInteraction):
     return await client.set_init_presence(inter)
 
@@ -211,7 +237,11 @@ async def uptime_slash(inter: ApplicationCommandInteraction):
     return await client.uptime(inter)
 
 
-@client.slash_command(name="allowable_events", description="Determines whether events by the bot should be allowed on the event channel.")
+@client.slash_command(
+    name="allowable_events",
+    description="Determines whether events by the bot should be allowed on the event channel.",
+    default_member_permissions=Permissions(administrator=True)
+)
 async def allowable_events_slash(inter: ApplicationCommandInteraction, value: bool):
     if hasattr(inter.guild, "id") is False:
         return await inter.response.send_message(f"This command can only be used in servers.")

@@ -22,7 +22,7 @@ BASE_URL = "https://raw.githubusercontent.com/TwelfthDoctor1/TD1-Discord-Python-
 STRINGHANDLER_SERVICE = StringHandlerService()
 
 
-class LocalizedStringEnum(enum):
+class LocalizedStringEnum(enum.IntEnum):
     """
     Enums used to determine the String to used based on Localization.
     """

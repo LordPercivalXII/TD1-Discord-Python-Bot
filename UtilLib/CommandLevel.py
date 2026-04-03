@@ -139,7 +139,8 @@ class CommandHandler:
                 else:
                     err_msg = f"{message} {self.return_min_lvl()} {self.return_max_lvl()}"
 
-            await ctx.response.send_message(err_msg) if hasattr(ctx, "response") else await ctx.send(err_msg)
+            await ctx.response.send_message(err_msg, ephemeral=True) if hasattr(ctx, "response") else \
+                await ctx.send(err_msg, ephemeral=True)
 
             return False
 
