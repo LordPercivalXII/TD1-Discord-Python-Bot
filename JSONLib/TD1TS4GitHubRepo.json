@@ -17,7 +17,7 @@
     "name": "ts4-devaccesspanel",
     "description": "This repository stores scripts for the DevAccessPanel mod.",
     "url": "https://github.com/L-P-TD1/ts4-devaccesspanel",
-    "redacted": true,
+    "redacted": false,
     "disallow_entry": false
   },
   "ts4_masterspells": {
@@ -31,21 +31,21 @@
     "name": "ts4-occulthybrid",
     "description": "This repository stores scripts for the OccultHybrid mod.",
     "url": "https://github.com/L-P-TD1/ts4-occulthybrid",
-    "redacted": true,
+    "redacted": false,
     "disallow_entry": false
   },
   "ts4_ttv": {
     "name": "ts4-ttv",
     "description": "This repository stores scripts for the Travel To Venue mod.",
     "url": "https://github.com/L-P-TD1/ts4-ttv",
-    "redacted": true,
+    "redacted": false,
     "disallow_entry": false
   },
   "ts4_tms": {
     "name": "ts4-tms",
     "description": "This repository stores scripts for the Teleport Memory System mod.",
     "url": "https://github.com/L-P-TD1/ts4-tms",
-    "redacted": true,
+    "redacted": false,
     "disallow_entry": false
   }
 }
